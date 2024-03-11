@@ -10,6 +10,9 @@ def main():
   s1 = "ATTC"
   s2 = "ATC"
 
+  # s1 = "GAA"
+  # s2 = "GGAA"
+
   # Initialize the extended matrix with zeros, accounting for the extra row and column
   m = np.zeros((len(s1) + 1, len(s2) + 1), dtype=int)
 
@@ -66,13 +69,17 @@ def main():
       if prev is not None and prev[1] == next[1]:
         s1align.append('-')
         s2align.append(traceback.columns[next[1]])
+      elif prev is not None and prev[0] == next[0]:
+        print("here")
+        s2align.append('-')
+        s1align.append(traceback.columns[next[0]])
       else:
         s1align.append(traceback.index[next[0]])
         s2align.append(traceback.columns[next[1]])
       prev = next[:]
       next = traceback.iat[next[0], next[1]]
 
-  return df, s1align, s2align
+  return df, s1align[::-1], s2align[::-1]
 
 df, s1align, s2align = main()
 
