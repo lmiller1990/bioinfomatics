@@ -7,8 +7,8 @@ gap = -2
 
 def main():
   # Define your sequences
-  s1 = "ATTC"
-  s2 = "ATC"
+  s1 = "GAT"
+  s2 = "TAGGT"
 
   # s1 = "GAA"
   # s2 = "GGAA"
@@ -30,7 +30,7 @@ def main():
     for j in range(df.shape[1]):  # Iterate over columns
         value = df.iat[i, j]
         if i == 0 and j == 0:
-           continue
+          pass
         elif value == 0:
           up = df.iat[i-1, j] + gap
           left = df.iat[i ,j-1] + gap
@@ -38,52 +38,26 @@ def main():
           diag = ismatch + df.iat[i-1,j-1]
           best = max(diag, up, left)
           df.iat[i, j] = best
+          def fn(dir): 
+            print(f"best for [{i},{j}] ({df.index[i]} {df.columns[j]}) is {dir} ", end="")
+
           if best == up:
+            fn("up")
+            print(f"from [{i-1}, {j}]")
             traceback.iloc[i,j] = [i-1,j]
           elif best == left:
+            fn("left")
+            print(f"from [{i}, {j-1}]")
             traceback.iat[i, j] = [i,j-1]
           elif best == diag:
+            fn("diag")
+            print(f"from [{i-1}, {j-1}]")
             traceback.iat[i, j] = [i-1,j-1]
 
-  col_len = len(df.columns)
-  row_len = len(df.index)
+  print(df)
 
-  i = row_len-1
-  j = col_len-1
-  s1align = []
-  s2align = []
-  init = True
-  prev = None
-  next = None
+  return df
 
-  while True:
-    if next is not None and next[0] == 0 and next[1] == 0:
-      break
-    if init:
-      s1align.append(traceback.index[i])
-      s2align.append(traceback.columns[j])
-      init = False
-      next = traceback.iat[i, j]
-    else:
-      # going up
-      if prev is not None and prev[1] == next[1]:
-        s1align.append('-')
-        s2align.append(traceback.columns[next[1]])
-      elif prev is not None and prev[0] == next[0]:
-        print("here")
-        s2align.append('-')
-        s1align.append(traceback.columns[next[0]])
-      else:
-        s1align.append(traceback.index[next[0]])
-        s2align.append(traceback.columns[next[1]])
-      prev = next[:]
-      next = traceback.iat[next[0], next[1]]
+df = main()
 
-  return df, s1align[::-1], s2align[::-1]
-
-df, s1align, s2align = main()
-
-print(df)
-print("Alignment\n")
-print("".join(s1align))
-print("".join(s2align))
+# print(df)
