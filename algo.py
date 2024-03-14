@@ -10,8 +10,8 @@ TracebackMap: TypeAlias = Dict[str,List[int]]
 
 def main():
   # Define your sequences
-  s1 = "GAT"
-  s2 = "TAGGT"
+  s1 = "GTCGACGCA"
+  s2 = "GATTACA"
 
   # s1 = "GAA"
   # s2 = "GGAA"
@@ -42,6 +42,7 @@ def main():
       j = next[1]
       next = traceback_map[f"{i},{j}"]
 
+    path.reverse()
     return path
 
   traceback_map: TracebackMap = {}
@@ -59,48 +60,48 @@ def main():
           best = max(diag, up, left)
           df.iat[i, j] = best
           def fn(dir): 
-            print(f"best for [{i},{j}] ({df.index[i]} {df.columns[j]}) is {dir} ", end="")
+            pass
+            # print(f"best for [{i},{j}] ({df.index[i]} {df.columns[j]}) is {dir} ", end="")
 
           if best == up:
             fn("up")
-            print(f"from [{i-1}, {j}]")
+            # print(f"from [{i-1}, {j}]")
             traceback_map[f"{i},{j}"] = [i-1,j]
             traceback.iloc[i,j] = [i-1,j]
           elif best == left:
             fn("left")
-            print(f"from [{i}, {j-1}]")
+            # print(f"from [{i}, {j-1}]")
             traceback_map[f"{i},{j}"] = [i,j-1]
             traceback.iat[i, j] = [i,j-1]
           elif best == diag:
             fn("diag")
-            print(f"from [{i-1}, {j-1}]")
+            # print(f"from [{i-1}, {j-1}]")
             traceback_map[f"{i},{j}"] = [i-1,j-1]
             traceback.iat[i, j] = [i-1,j-1]
 
-  # print(df)
-  # print(traceback_map)
-
   trace = make_traceback(df, traceback_map)
-  trace.reverse()
   a1 = ""
   a2 = ""
   previ = 0
   prevj = 0
-  print(trace)
+
   for [i,j] in trace:
     if i != previ:
       a1 = a1 + df.index[i]
     else:
       # horizontal
       a1 = a1 + "-"
-    a2 = a2 + df.columns[j]
+    if j != prevj:
+      a2 = a2 + df.columns[j]
+    else:
+      # vertical
+      a2 = a2 + "-"
     previ = i
     prevj = j
-  print(a1)
-  print(a2)
 
-  return df
+  return df, a1, a2
 
-df = main()
+df, a1, a2 = main()
 
-# print(df)
+print(a1)
+print(a2)
