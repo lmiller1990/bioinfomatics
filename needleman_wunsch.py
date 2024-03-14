@@ -6,14 +6,16 @@ import argparse
 TracebackMap: TypeAlias = Dict[str, List[int]]
 Traceback: TypeAlias = List[List[int]]
 
-parser = argparse.ArgumentParser(description='Run Needleman Wunsch')
+parser = argparse.ArgumentParser(description="Run Needleman Wunsch")
 
-parser.add_argument('s1', type=str, help='First sequence')
-parser.add_argument('s2', type=str, help='Second sequence')
+parser.add_argument("s1", type=str, help="First sequence")
+parser.add_argument("s2", type=str, help="Second sequence")
 
-parser.add_argument('--gap', type=int, default=-2, help='Gap penalty (default: -2)')
-parser.add_argument('--mismatch', type=int, default=-1, help='Mismatch penalty (default: -1)')
-parser.add_argument('--match', type=int, default=1, help='Match score (default: 1)')
+parser.add_argument("--gap", type=int, default=-2, help="Gap penalty (default: -2)")
+parser.add_argument(
+    "--mismatch", type=int, default=-1, help="Mismatch penalty (default: -1)"
+)
+parser.add_argument("--match", type=int, default=1, help="Match score (default: 1)")
 
 # Parse the arguments
 args = parser.parse_args()
@@ -21,6 +23,7 @@ args = parser.parse_args()
 gap = args.gap
 mismatch = args.mismatch
 match = args.match
+
 
 def align(df: pd.DataFrame, trace: Traceback) -> tuple[str, str]:
     a1 = ""
@@ -62,17 +65,11 @@ def make_traceback(df: pd.DataFrame, traceback_map: TracebackMap) -> Traceback:
 
 
 def main(s1, s2) -> tuple[str, str]:
-    # Define your sequences
-    s1 = "GTCGACGCA"
-    s2 = "GATTACA"
-
     # Initialize the extended matrix with zeros, accounting for the extra row and column
     m = np.zeros((len(s1) + 1, len(s2) + 1), dtype=int)
 
     # Convert the NumPy array to a Pandas DataFrame with placeholders for the extra row and column
     df = pd.DataFrame(m, index=[""] + list(s1), columns=[""] + list(s2))
-
-    t = np.empty((len(s1) + 1, len(s2) + 1), dtype=object)
 
     # Update the first row and first column with the decrementing values
     df.iloc[0, :] = np.arange(0, -2 * (len(s2) + 1), -2)  # First row
@@ -101,11 +98,10 @@ def main(s1, s2) -> tuple[str, str]:
                 traceback_map[f"{i},{j}"] = [i - 1, j - 1]
 
     trace = make_traceback(df, traceback_map)
-    a1, a2 = align(df, trace)
+    return align(df, trace)
 
-    return a1, a2
 
-if __name__ == '__main__':
-  s1, s2 = main(args.s1, args.s2)
-  print(s1)
-  print(s2)
+if __name__ == "__main__":
+    s1, s2 = main(args.s1, args.s2)
+    print(s1)
+    print(s2)
