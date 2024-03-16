@@ -62,4 +62,27 @@ for col in pwm.columns:
     val = ppm.loc[n, col]
     pwm.loc[n,col]= round(math.log2(val), 2)
 
-print(pwm)
+s1 = "ATGCGATGACCTGCGGC"
+
+def search(s1: str, pwm: pd.DataFrame) -> tuple[int, str]:
+  n = pwm.shape[1]
+  bestidx = -1
+  best_score = 0
+  for i in range(len(s1) - n+1):
+    window = s1[i:i+n]
+    score = 0
+
+    for j, nt in enumerate(window):
+      score = score + pwm.loc[nt,j]
+
+    if score > best_score:
+      bestidx = i
+      best_score = score
+
+  return bestidx, s1[bestidx:bestidx+n]
+    
+
+best_idx, best_seq = search(s1, pwm)
+
+print(s1)
+print(" " * (best_idx - 1), "^" * len(best_seq), "<- most likely to be motif")
